@@ -7,6 +7,14 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('/', 'Home::index');
 
+$routes->get('/register','AuthController::register');
+$routes->post('/register', 'AuthController::attemptRegister');
+
+$routes->get('/login', 'AuthController::login');
+$routes->post('/login', 'AuthController::attemptLogin');
+
+$routes->get('/logout', 'AuthController::logout');
+
 $routes->group('tasks', function ($routes){
    $routes->get('/' , 'TaskController::index');
    $routes->get('show/(:num)' , 'TaskController::show/$1');
