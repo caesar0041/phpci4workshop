@@ -10,19 +10,24 @@ class TaskController extends BaseController
 {
    protected $taskModel;
 
-   public function __construct() {
-      $taskModel = new TaskModel();
-   }
+
+    public function __construct()
+    {
+        $this->taskModel = new TaskModel();
+    }
+
    // // List all task
-   public function index() {
+   public function index()
+   {
       $data = [
-      'tasks' => $this->taskModel
-      ->where('user_id',session()->get('user_id'))
-      ->orderBy('created_at','DESC')->findAll(),
-      'title'=> 'All Tasks'
+         'tasks' => $this->taskModel
+            ->where('user_id', session()->get('user_id'))
+            ->orderBy('created_at', 'DESC')->findAll(),
+         'title' => 'All Tasks',
       ];
-      return view('tasks/',$data);
+      return view('tasks/index', $data);
    }
+
 
    // View task detail
    public function show($id) {
