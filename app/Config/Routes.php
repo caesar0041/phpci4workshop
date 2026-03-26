@@ -28,3 +28,10 @@ $routes->group('tasks', function ($routes){
    $routes->post('delete/(:num)', 'TaskController::delete/$1');
 
 });
+
+$routes->group('api', function($routes){
+   $routes->resource('tasks', ['controller' => 'Api\\TaskApiController']);
+}
+
+
+);
