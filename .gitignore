@@ -126,3 +126,5 @@ _modules/*
 /phpunit*.xml
 
 .env
+/Activity No.1/
+/Activity No.1.zip/
