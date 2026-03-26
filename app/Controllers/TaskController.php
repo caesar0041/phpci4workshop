@@ -11,26 +11,44 @@ class TaskController extends BaseController
    protected $taskModel;
 
 
-    public function __construct()
-    {
-        $this->taskModel = new TaskModel();
-    }
+   public function __construct()
+   {
+      $this->taskModel = new TaskModel();
+   }
 
    // // List all task
    public function index()
    {
-      $data = [
-         'tasks' => $this->taskModel
-            ->where('user_id', session()->get('user_id'))
-            ->orderBy('created_at', 'DESC')->findAll(),
-         'title' => 'All Tasks',
-      ];
-      return view('tasks/index', $data);
+      // $data = [
+      //    'tasks' => $this->taskModel
+      //       ->where('user_id', session()->get('user_id'))
+      //       ->orderBy('created_at', 'DESC')->paginate(10),
+      //    'pager' => $this->taskModel->pager,
+      //    'title' => 'All Tasks',
+      // ];
+      // return view('tasks/index', $data);
+      $status = $this->request->getGet('status') ?? 'all';
+      $userId = session('user_id');
+
+      $builder = $this->taskModel->where('user_id', $userId);
+
+      if ($status !== 'all') {
+         $builder->where('status', $status);
+      }
+
+      $tasks = $builder->orderBy('due_date', 'ASC')->paginate(5);
+
+      return view('tasks/index', [
+         'tasks' => $tasks,
+         'selectedStatus' => $status,
+         'pager' => $this->taskModel->pager
+      ]);
    }
 
 
    // View task detail
-   public function show($id) {
+   public function show($id)
+   {
       $task = $this->taskModel->find($id);
       if (! $task || $task['user_id'] != session()->get('user_id')) {
          throw new \CodeIgniter\Exceptions\PageNotFoundException('Task not found.');
@@ -39,12 +57,14 @@ class TaskController extends BaseController
    }
 
    //  SHow empty form
-   public function create() {
+   public function create()
+   {
       return view('tasks/create', ['title' => 'Create Task']);
    }
 
    // Save new task to database
-   public function store() {
+   public function store()
+   {
       $rules = [
          'title'       => 'required|min_length[3]|max_length[255]',
          'description' => 'permit_empty|max_length[1000]',
@@ -66,7 +86,8 @@ class TaskController extends BaseController
    }
 
    // Show pre-filled form
-   public function edit($id) {
+   public function edit($id)
+   {
       $task = $this->taskModel->find($id);
       if (! $task || $task['user_id'] != session()->get('user_id')) {
          throw new \CodeIgniter\Exceptions\PageNotFoundException('Task not found.');
@@ -75,7 +96,8 @@ class TaskController extends BaseController
    }
 
    // Save chnages to database
-   public function update($id) {
+   public function update($id)
+   {
       $rules = [
          'title'       => 'required|min_length[3]|max_length[255]',
          'description' => 'permit_empty|max_length[1000]',
@@ -96,7 +118,8 @@ class TaskController extends BaseController
    }
 
    // Remove from database
-   public function delete($id) {
+   public function delete($id)
+   {
       $task = $this->taskModel->find($id);
       if (! $task || $task['user_id'] != session()->get('user_id')) {
          throw new \CodeIgniter\Exceptions\PageNotFoundException('Task not found.');

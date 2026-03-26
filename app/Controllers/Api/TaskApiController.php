@@ -11,7 +11,33 @@ class TaskApiController extends ResourceController
    protected $format = 'json ';
    public function index()
    {
-      return $this->respond($this->model->findALl());
+      // return $this->respond($this->model->findAll());
+
+      $status = $this->request->getGet('status');
+      $userId = session('user_id');
+
+      $builder = $this->model->where('user_id', $userId);
+
+      if ($status && $status !== 'all') {
+         $builder->where('status', $status);
+      }
+
+      $tasks = $builder->findAll();
+
+      $events = array_map(function ($task) {
+         return [
+            'id' => $task['id'],
+            'title' => $task['title'],
+            'start' => $task['due_date'] ?? date('Y-m-d'),
+            'end' => $task['due_date'] ?? null,
+            'extendedProps' => [
+               'status' => $task['status'],
+               'description' => $task['description']
+            ]
+         ];
+      }, $tasks);
+
+      return $this->respond($events);
    }
 
    public function show($id = null)
